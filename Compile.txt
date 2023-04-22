@@ -22,3 +22,4 @@ ROM.v
 ./VGAStuff/VGA_RAM.v
 ./VGAStuff/VGA_Sprite_RAM.v
 ./VGAStuff/VGATimingGenerator.v
+./seven_seg/hex_seven_seg.v

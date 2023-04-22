@@ -5,8 +5,7 @@ module VGAController(
 	input[8:0] sprite1Y, sprite2Y, sprite3Y, sprite4Y, sprite5Y, sprite6Y, sprite7Y, sprite8Y, sprite9Y, sprite10Y,
      input[9:0] playerX,
      input[8:0] playerY,
-     input[9:0] bullet1X, bullet2X, bullet3X, bullet4X, bullet5X,
-     input[8:0] bullet1Y, bullet2Y, bullet3Y, bullet4Y, bullet5Y,
+     input laser,
      input clk,     // 100 MHz System Clock
      input reset,      // Reset Signal
      output hSync,  // H Sync Signal
@@ -88,17 +87,17 @@ module VGAController(
     
      //wire in_x= x> xcoord && x<xcoord+50;
      //wire in_y=y>ycoord && y<ycoord+50;
-     assign insquareArr[11]= (x > playerX && x<playerX+50) && (y>playerY && y<playerY+50);
-     assign insquareArr[10]= (x > sprite10X && x<sprite10X+50) && (y>sprite10Y && y<sprite10Y+50);
-     assign insquareArr[9]= (x > sprite9X && x<sprite9X+50) && (y>sprite9Y && y<sprite9Y+50);
-     assign insquareArr[8]= (x > sprite8X && x<sprite8X+50) && (y>sprite8Y && y<sprite8Y+50);
-     assign insquareArr[7]= (x > sprite7X && x<sprite7X+50) && (y>sprite7Y && y<sprite7Y+50);
-     assign insquareArr[6]= (x > sprite6X && x<sprite6X+50) && (y>sprite6Y && y<sprite6Y+50);
-     assign insquareArr[5]= (x > sprite5X && x<sprite5X+50) && (y>sprite5Y && y<sprite5Y+50);
-     assign insquareArr[4]= (x > sprite4X && x<sprite4X+50) && (y>sprite4Y && y<sprite4Y+50);
-     assign insquareArr[3]= (x > sprite3X && x<sprite3X+50) && (y>sprite3Y && y<sprite3Y+50);
-     assign insquareArr[2]= (x > sprite2X && x<sprite2X+50) && (y>sprite2Y && y<sprite2Y+50);
-     assign insquareArr[1]= (x > sprite1X && x<sprite1X+50) && (y>sprite1Y && y<sprite1Y+50);
+     assign insquareArr[11]= (x > playerXCoord && x<playerXCoord+50) && (y>playerYCoord && y<playerYCoord+50);
+     assign insquareArr[10]= (x > sprite10XCoord && x<sprite10XCoord+50) && (y>sprite10YCoord && y<sprite10YCoord+50);
+     assign insquareArr[9]= (x > sprite9XCoord && x<sprite9XCoord+50) && (y>sprite9YCoord && y<sprite9YCoord+50);
+     assign insquareArr[8]= (x > sprite8XCoord && x<sprite8XCoord+50) && (y>sprite8YCoord && y<sprite8YCoord+50);
+     assign insquareArr[7]= (x > sprite7XCoord && x<sprite7XCoord+50) && (y>sprite7YCoord && y<sprite7YCoord+50);
+     assign insquareArr[6]= (x > sprite6XCoord && x<sprite6XCoord+50) && (y>sprite6YCoord && y<sprite6YCoord+50);
+     assign insquareArr[5]= (x > sprite5XCoord && x<sprite5XCoord+50) && (y>sprite5YCoord && y<sprite5YCoord+50);
+     assign insquareArr[4]= (x > sprite4XCoord && x<sprite4XCoord+50) && (y>sprite4YCoord && y<sprite4YCoord+50);
+     assign insquareArr[3]= (x > sprite3XCoord && x<sprite3XCoord+50) && (y>sprite3YCoord && y<sprite3YCoord+50);
+     assign insquareArr[2]= (x > sprite2XCoord && x<sprite2XCoord+50) && (y>sprite2YCoord && y<sprite2YCoord+50);
+     assign insquareArr[1]= (x > sprite1XCoord && x<sprite1XCoord+50) && (y>sprite1YCoord && y<sprite1YCoord+50);
 
      //priorityencoder_16_4 get_mux_select_bits(.en(1'b1),.i(insquareArr),.y(muxSelect));
     
@@ -177,29 +176,29 @@ module VGAController(
      // Sprite mem
 
      wire[SPRITE_ADDRESS_WIDTH-1:0] addrSprite1, addrSprite2, addrSprite3, addrSprite4, addrSprite5, addrSprite6, addrSprite7, addrSprite8, addrSprite9, addrSprite10, addrPlayer;       // address for the ascii palette
-     assign addrSprite1 = (0)*2500 + ((y - sprite1Y) * 50 + (x - sprite1X));
-     assign addrSprite2 = (1)*2500 + ((y - sprite2Y) * 50 + (x - sprite2X));
-     assign addrSprite3 = (2)*2500 + ((y - sprite3Y) * 50 + (x - sprite3X));
-     assign addrSprite4 = (3)*2500 + ((y - sprite4Y) * 50 + (x - sprite4X));
-     assign addrSprite5 = (4)*2500 + ((y - sprite5Y) * 50 + (x - sprite5X));
-     assign addrSprite6 = (5)*2500 + ((y - sprite6Y) * 50 + (x - sprite6X));
-     assign addrSprite7 = (6)*2500 + ((y - sprite7Y) * 50 + (x - sprite7X));
-     assign addrSprite8 = (7)*2500 + ((y - sprite8Y) * 50 + (x - sprite8X));
-     assign addrSprite9 = (8)*2500 + ((y - sprite9Y) * 50 + (x - sprite9X));
-     assign addrSprite10 = (9)*2500 + ((y - sprite10Y) * 50 + (x - sprite10X));
-     assign addrPlayer = (10)*2500 + ((y - playerY) * 50 + (x - playerX));
+     assign addrSprite1 = insquareArr[1] ? (1)*2500 + ((y - sprite1YCoord) * 50 + (x - sprite1XCoord)) : 32'b0;
+     assign addrSprite2 = insquareArr[2] ?  (1)*2500 + ((y - sprite2YCoord) * 50 + (x - sprite2XCoord)) : 32'b0;
+     assign addrSprite3 = insquareArr[3] ? (1)*2500 + ((y - sprite3YCoord) * 50 + (x - sprite3XCoord)) : 32'b0;
+     assign addrSprite4 = insquareArr[4] ? (1)*2500 + ((y - sprite4YCoord) * 50 + (x - sprite4XCoord)) : 32'b0;
+     assign addrSprite5 = insquareArr[5] ? (1)*2500 + ((y - sprite5YCoord) * 50 + (x - sprite5XCoord)) : 32'b0;
+     assign addrSprite6 = insquareArr[6] ? (1)*2500 + ((y - sprite6YCoord) * 50 + (x - sprite6XCoord)) : 32'b0;
+     assign addrSprite7 = insquareArr[7] ? (1)*2500 + ((y - sprite7YCoord) * 50 + (x - sprite7XCoord)) : 32'b0;
+     assign addrSprite8 = insquareArr[8] ? (1)*2500 + ((y - sprite8YCoord) * 50 + (x - sprite8XCoord)) : 32'b0;
+     assign addrSprite9 = insquareArr[9] ? (1)*2500 + ((y - sprite9YCoord) * 50 + (x - sprite9XCoord)) : 32'b0;
+     assign addrSprite10 = insquareArr[10] ? (1)*2500 + ((y - sprite10YCoord) * 50 + (x - sprite10XCoord)) : 32'b0;
+     assign addrPlayer = insquareArr[11] ? (0)*2500 + ((y - playerYCoord) * 50 + (x - playerXCoord)) : 32'b0;
      wire sprite1Data, sprite2Data, sprite3Data, sprite4Data, sprite5Data, sprite6Data, sprite7Data, sprite8Data, sprite9Data, sprite10Data, playerData;
  
 
      localparam
           BITS_PER_SPRITE = 1,                                             // Nexys A7 uses 12 bits/color
-          SPRITE_COUNT = 94 * 2500,                                   // Number of Colors available
+          SPRITE_COUNT = 1 * 2500,                                   // Number of Colors available
           SPRITE_ADDRESS_WIDTH = $clog2(SPRITE_COUNT) + 1; // Use built in log2 Command
      VGA_Sprite_RAM #(
-          .DEPTH(550),            // Set depth to contain every color        
+          .DEPTH(2500),            // Set depth to contain every color        
           .DATA_WIDTH(BITS_PER_SPRITE),              // Set data width according to the bits per color
           .ADDRESS_WIDTH(SPRITE_ADDRESS_WIDTH),     // Set address width according to the color count
-          .MEMFILE({FILES_PATH, "sprites.mem"}))  // Memory initialization
+          .MEMFILE({FILES_PATH, "ship_sprites.mem"}))  // Memory initialization
      SpriteData(
           .clk(clk),                                        // Rising edge of the 100 MHz clk
           .addrSprite1(addrSprite1), .addrSprite2(addrSprite2), .addrSprite3(addrSprite3), .addrSprite4(addrSprite4), .addrSprite5(addrSprite5), .addrSprite6(addrSprite6), .addrSprite7(addrSprite7), .addrSprite8(addrSprite8), .addrSprite9(addrSprite9), .addrSprite10(addrSprite10),
@@ -238,13 +237,14 @@ module VGAController(
      wire[BITS_PER_COLOR-1:0] tempColorOut;  
 
      wire[BITS_PER_COLOR-1:0] colorOut;                // Output color
-
-     wire in_square = insquareArr[1] || insquareArr[2] || insquareArr[3] || insquareArr[4] || insquareArr[5] 
-     || insquareArr[6] || insquareArr[7] || insquareArr[8] || insquareArr[9] || insquareArr[10] || insquareArr[11];
-
+     
+     wire in_square = insquareArr[11] || insquareArr[10] || insquareArr[9] || insquareArr[8] || insquareArr[7] || insquareArr[6] ||
+          insquareArr[5] || insquareArr[4] || insquareArr[3] || insquareArr[2] || insquareArr[1];
      wire spriteData = playerData || sprite1Data || sprite2Data || sprite3Data || sprite4Data || sprite5Data || sprite6Data || sprite7Data
-     || sprite8Data || sprite9Data || sprite10Data;
-
+                         || sprite8Data || sprite9Data || sprite10Data;
+     
+     //wire in_square = insquareArr[11] || insquareArr[2] || insquareArr[1];
+     //wire spriteData = playerData || sprite1Data || sprite2Data;
      assign finalcolor=in_square ? 12'b0 : colorData;
 
      //mux16 colorMux(.out(tempColorOut), .select(muxSelect), .in0(finalcolor), .in1(12'hc77), .in2(12'hc77), .in3(12'hc77), .in4(12'hc77), .in5(12'hc77), .in6(12'hc77), 
@@ -252,9 +252,9 @@ module VGAController(
 
      // Assign to output color from register if active
      //wire[BITS_PER_COLOR-1:0] finalcolor;
-     
-    
-     assign colorOut = active ? ((spriteData & in_square) ? 12'hc77 : finalcolor) : 12'b0; // When not active, output black
+     wire inLaser = (playerXCoord+23 < x) & (playerXCoord+27 > x) & (y < playerYCoord) & laser;
+     //if we want breadboard change from 12'h000 to finalcolor
+     assign colorOut = active ? (inLaser ? 12'hfff : ((spriteData & in_square) ? 12'hfff : 12'h000)) : 12'b0; // When not active, output black
      //assign colorOut = active ? tempColorOut : 12'b0;
      // Quickly assign the output colors to their channels using concatenation
      assign {VGA_R, VGA_G, VGA_B} = colorOut;

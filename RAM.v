@@ -5,6 +5,9 @@ module RAM #( parameter DATA_WIDTH = 32, ADDRESS_WIDTH = 12, DEPTH = 2048) (
     input wire                     wEn,
     input wire [ADDRESS_WIDTH-1:0] addr,
     input wire [DATA_WIDTH-1:0]    dataIn,
+    input wire                     moveRight,
+    input wire                     moveLeft,
+    input wire                     laserOn,
     output reg [DATA_WIDTH-1:0]    dataOut = 0,
     output wire [31:0] sprite1X, sprite1Y,
     output wire [31:0] sprite2X, sprite2Y,
@@ -16,11 +19,7 @@ module RAM #( parameter DATA_WIDTH = 32, ADDRESS_WIDTH = 12, DEPTH = 2048) (
     output wire [31:0] sprite8X, sprite8Y,
     output wire [31:0] sprite9X, sprite9Y,
     output wire [31:0] sprite10X, sprite10Y,
-    output wire [31:0] bullet1X, bullet1Y,
-    output wire [31:0] bullet2X, bullet2Y,
-    output wire [31:0] bullet3X, bullet3Y,
-    output wire [31:0] bullet4X, bullet4Y,
-    output wire [31:0] bullet5X, bullet5Y,
+    output wire [31:0] laser, playerLives, playerScore,
     output wire[31:0] playerX, playerY);
     
     reg[DATA_WIDTH-1:0] MemoryArray[0:DEPTH-1];
@@ -36,8 +35,8 @@ module RAM #( parameter DATA_WIDTH = 32, ADDRESS_WIDTH = 12, DEPTH = 2048) (
     end
     
     //assign temp1 = MemoryArray[1234];   
-    assign playerX = MemoryArray[1000];
-    assign playerY = MemoryArray[1001];
+    assign playerX = MemoryArray[2000];
+    assign playerY = MemoryArray[2001];
 
     assign sprite1X = MemoryArray[1010];
     assign sprite1Y = MemoryArray[1011];
@@ -69,23 +68,14 @@ module RAM #( parameter DATA_WIDTH = 32, ADDRESS_WIDTH = 12, DEPTH = 2048) (
     assign sprite10X = MemoryArray[1100];
     assign sprite10Y = MemoryArray[1101];
 
-    assign bullet1X = MemoryArray[2000];
-    assign bullet1Y = MemoryArray[2001];
-
-    assign bullet2X = MemoryArray[2010];
-    assign bullet2Y = MemoryArray[2011];
-
-    assign bullet3X = MemoryArray[2020];
-    assign bullet3Y = MemoryArray[2021];
-
-    assign bullet4X = MemoryArray[2030];
-    assign bullet4Y = MemoryArray[2031];
-
-    assign bullet5X = MemoryArray[2040];
-    assign bullet5Y = MemoryArray[2041];
+    assign laser = MemoryArray[1200];
+    assign playerLives = MemoryArray[1250];
+    assign playerScore = MemoryArray[1300];
     
     always @(posedge clk) begin
-
+        MemoryArray[400] <= moveLeft;
+        MemoryArray[800] <= moveRight;
+        MemoryArray[1200] <= laserOn;
         if(wEn) begin
             MemoryArray[addr] <= dataIn;
         end else begin
