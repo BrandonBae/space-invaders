@@ -46,9 +46,39 @@ module Wrapper (CLK100MHZ, BTND, LED, VGA_R, VGA_G, VGA_B, MOVE_LEFT, MOVE_RIGHT
 
 	reg clk1Hz = 0;
 	reg[27:0] counter = 0;
+	reg[27:0] laserCounter = 0;
+	reg[27:0] rightCounter = 0;
+	reg[27:0] leftCounter = 0;
 	wire [26:0] CounterLimit;
 	assign CounterLimit = 27'd999;
 	always @(posedge CLK100MHZ) begin
+		if(~LASER_ON == 1'b1) begin
+			if(laserCounter < 27'd10000000) begin
+				laserCounter <= laserCounter + 1;
+			end
+		end
+		else begin
+			laserCounter <= 0;
+		end
+
+		if(~MOVE_RIGHT == 1'b1) begin
+			if(rightCounter < 27'd10000000) begin 
+				rightCounter <= rightCounter + 1;
+			end
+		end
+		else begin
+			rightCounter <= 0;
+		end
+
+		if(~MOVE_LEFT == 1'b1) begin
+			if(leftCounter < 27'd10000000) begin
+				leftCounter <= leftCounter + 1;
+			end
+		end
+		else begin
+			leftCounter <= 0;
+		end
+
 		if(counter < CounterLimit)
 			counter <= counter + 1;
 		else begin
@@ -57,6 +87,10 @@ module Wrapper (CLK100MHZ, BTND, LED, VGA_R, VGA_G, VGA_B, MOVE_LEFT, MOVE_RIGHT
 		end
 	end
 	
+	wire debouncedLaserOn = (laserCounter >= 27'd5000000);
+	wire debouncedMoveRight = (rightCounter >= 27'd5000000);
+	wire debouncedMoveLeft = (leftCounter >= 27'd5000000);
+
 	output [3:0] VGA_R, VGA_G, VGA_B;
 	output hSync, vSync;
 	VGAController displayOutput(
@@ -119,7 +153,7 @@ module Wrapper (CLK100MHZ, BTND, LED, VGA_R, VGA_G, VGA_B, MOVE_LEFT, MOVE_RIGHT
     	.sprite10X(spriteXArr[9]), .sprite10Y(spriteYArr[9]),
     	.laser(laser), .playerLives(playerLives), .playerScore(playerScore),
     	.playerX(inPlayerX), .playerY(inPlayerY),
-		.moveRight(~MOVE_RIGHT), .moveLeft(~MOVE_LEFT), .laserOn(~LASER_ON));
+		.moveRight(debouncedMoveRight), .moveLeft(debouncedMoveLeft), .laserOn(debouncedLaserOn));
 
 	//assign LED = temp1Val[15:0];
 	
